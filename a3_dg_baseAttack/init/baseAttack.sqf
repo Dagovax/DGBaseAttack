@@ -84,7 +84,35 @@ while {true} do // Main Loop
 							_baseLevel = _base getVariable "ExileTerritoryLevel";
 							// START THE RAID
 							[format["After waiting %1 seconds, there are still %2 player(s) on the base! Starting the raid now!", _secondsPlayerIn, _newCount], DGBA_MessageName, "debug"] call DGCore_fnc_log;
-							[ "ColorRed", "BASE RAID", format [ "%1 Bandits are now raiding player base '%2' @ %3", worldName, _baseNm, mapGridPosition _pos ] ] ExecVM ( "notificationToClient" call VEMFr_fnc_scriptPath ); // If VeMR is installed!!
+							
+							_notificationTitle = "BASE RAID";
+							_notificationMessage = format[ "%1 Bandits are now raiding player base '%2' @ %3", worldName, _baseNm, mapGridPosition _pos];
+							if(DGBA_ShowNotification == 1) then // Exile notification
+							{
+								[
+									"toastRequest",
+									[
+										"InfoEmpty",
+										[
+											format
+											[
+												"<t color='#FF0000' size='%1' font='%2'>%3</t><br/><t color='%4' size='%5' font='%6'>%7</t>",
+												25,
+												"puristaMedium",
+												_notificationTitle,
+												"#FFFFFF",
+												19,
+												"PuristaLight",
+												_notificationMessage
+											]
+										]
+									]
+								] call ExileServer_system_network_send_broadcast;
+							};
+							if(DGBA_ShowNotification == 2) then // VeMR notification
+							{
+								["ColorRed", _notificationTitle, _notificationMessage] ExecVM ( "notificationToClient" call VEMFr_fnc_scriptPath );
+							};
 							
 							if(DGBA_EnableAlarmSound) then
 							{
@@ -257,10 +285,10 @@ while {true} do // Main Loop
 										_unit setskill ["general",_skillLevel];
 									};
 									_firstGroup setCombatMode "RED";
-									_firstGroup setBehaviour "COMBAT";
+									_firstGroup setBehaviour "AWARE";
 									
 									 _wp = _firstGroup addWaypoint [ _enemyWaypointPos, 20, 1 ];
-									 _wp setWaypointBehaviour "COMBAT";
+									 _wp setWaypointBehaviour "AWARE";
 									 _wp setWaypointCombatMode "RED";
 									 _wp setWaypointCompletionRadius 10;
 									 _wp setWaypointFormation "DIAMOND";
@@ -268,7 +296,7 @@ while {true} do // Main Loop
 									 _wp setWaypointType "SAD";
 									 _firstGroup setCurrentWaypoint _wp;
 									
-									[format["Spawned first group %1 and it is targeting '%2'", _firstGroup, _baseNm], DGBA_MessageName, "debug"] call DGCore_fnc_log;
+									[format["Spawned first group %1 @ %2 and it is targeting '%3'", _firstGroup, _firstGroupPos, _baseNm], DGBA_MessageName, "debug"] call DGCore_fnc_log;
 									_count = _base getVariable "_firstGroupCount";
 									if (!isNil "_count") then
 									{
@@ -405,7 +433,7 @@ while {true} do // Main Loop
 									_secondGroup setCombatMode "RED";
 									_secondGroup setBehaviour "COMBAT";
 									
-									[format["Spawned second group %1 and it is targeting '%2'", _secondGroup, _baseNm], DGBA_MessageName, "debug"] call DGCore_fnc_log;
+									[format["Spawned second group %1 @ %2 and it is targeting '%3'", _secondGroup, _secondGroupPos, _baseNm], DGBA_MessageName, "debug"] call DGCore_fnc_log;
 									_wpPos = _enemyWaypointPos;
 									if(_isNavalInvasion) then
 									{
@@ -586,7 +614,7 @@ while {true} do // Main Loop
 									//_thirdGroup addVehicle _aircraftObject;
 									_thirdGroup setCombatMode "BLUE";
 									_thirdGroup setBehaviour "CARELESS";
-									[format["Spawned third group %1 and it is targeting '%2'", _thirdGroup, _baseNm], DGBA_MessageName, "debug"] call DGCore_fnc_log;
+									[format["Spawned third group %1 @ %2 and it is targeting '%3'", _thirdGroup, _thirdGroupPos, _baseNm], DGBA_MessageName, "debug"] call DGCore_fnc_log;
 									
 									_commanderFree = _aircraftObject emptyPositions "Commander";
 									_gunnerFree = _aircraftObject emptyPositions "Gunner";
@@ -739,7 +767,36 @@ while {true} do // Main Loop
 									};
 									if (_finished) exitWith {};
 								};
-								[ "ColorWhite", "BASE RAID", format ["The raid on base '%1' has ended!", _baseNm] ] ExecVM ( "notificationToClient" call VEMFr_fnc_scriptPath ); // If VeMR is installed!!
+								
+								_endTitle = "BASE RAID";
+								_endMessage = format[ "The raid on base '%1' has ended!",_baseNm];
+								if(DGBA_ShowNotification == 1) then // Exile notification
+								{
+									[
+										"toastRequest",
+										[
+											"SuccessEmpty",
+											[
+												format
+												[
+													"<t color='#0080ff' size='%1' font='%2'>%3</t><br/><t color='%4' size='%5' font='%6'>%7</t>",
+													25,
+													"puristaMedium",
+													_endTitle,
+													"#FFFFFF",
+													19,
+													"PuristaLight",
+													_endMessage
+												]
+											]
+										]
+									] call ExileServer_system_network_send_broadcast;
+								};
+								if(DGBA_ShowNotification == 2) then // VeMR notification
+								{
+									[ "ColorWhite", _endTitle, _endMessage ] ExecVM ( "notificationToClient" call VEMFr_fnc_scriptPath );
+								};
+
 								deleteMarker _raidMarker;
 								DGBA_RaidQueue deleteAt ( DGBA_RaidQueue find _base );
 							};
