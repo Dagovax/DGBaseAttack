@@ -59,11 +59,13 @@ Maximum time in seconds a player has to be in his base in order to start the rai
 ### DGBA_ShowNotification
 What kind of notification do you want to broadcast to all online players?
 Options are:
-`
-`0 = off 
-`1 = exile (Default)
-`2 = vemf_reloaded
-`
+
+>```
+>0 = off 
+>1 = exile (Default)
+>2 = vemf_reloaded
+>```
+
 Note that for option 2 you need to have (client) side Vemf_reloaded installed! 
 
 ### DGBA_MaxRaidCount
