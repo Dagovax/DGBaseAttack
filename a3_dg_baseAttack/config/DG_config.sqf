@@ -417,5 +417,7 @@ DGBA_AIVehicleAir = 	[ // Only for transport
 							// "CUP_B_UH1Y_UNA_USMC",
 							// "RHS_CH_47F_10_cargo"
 						];
-						
+		
+	
 ["Configuration loaded", DGBA_MessageName] call DGCore_fnc_log;
+DGBA_Configured = true;	

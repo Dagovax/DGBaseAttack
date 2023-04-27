@@ -1,9 +1,9 @@
 if (!isServer) exitWith {};
 
-if (isNil "DGBA_AIVehicleAir") then
+if (isNil "DGBA_Configured") then
 {
 	["%1 Waiting until configuration completes...", "DG Base Attacks"] call DGCore_fnc_log;
-	waitUntil{uiSleep 10; !(isNil "DGBA_AIVehicleAir")}
+	waitUntil{uiSleep 10; !(isNil "DGBA_Configured")}
 };
 
 ["Initializing Dagovax Games Base Raids", DGBA_MessageName] call DGCore_fnc_log;
