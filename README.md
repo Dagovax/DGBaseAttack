@@ -1,6 +1,17 @@
 # DGBaseAttack
 DG Exile server-side script that let AI attack a player's base
 
+# Release Notes
+## 01-02-2024
+- Fixed an issue where AI soldiers would not get in gunner positions of heli's while being transported
+- Added more configuration settings:
+	- [DGBA_AIUseNVG]
+	- [DGBA_AINVGSpawnChance]
+	- [DGBA_Vehicle_MaxWaitT]
+	- [DGBA_Vehicle_IdleRange]
+	- [DGBA_Airdrop_MaxWaitT]
+	- [DGBA_Airdrop_IdleRange]
+
 # Description
 
 This Arma 3 Exile script can be used to let AI raid a base from a player.
@@ -125,6 +136,24 @@ This will spawn a helicopter which will unload troops at the players base when l
 
 ### DGBA_CountAliveAI
 This will add the remaining AI count to the map marker that are to be killed to clear the base raid.
+
+### DGBA_AIUseNVG
+If set to true, AI might spawn with NVG goggles. The random percentage is defined below.
+
+### DGBA_AINVGSpawnChance
+Percentage. So a valid value between <0> and <100>. 0 will mean that no unit will spawn with NVG. 100 means they all have NVG
+
+### DGBA_Vehicle_MaxWaitT
+Amount of seconds the script will wait before checking the vehicle group state. Set this high enough if your vehicle group needs more time to load troops, and moving to the base.
+
+### DGBA_Vehicle_IdleRange
+Distance in meters the spawned vehicle should at least have moved since it has spawned. If the distance is less than this number, the vehicle will be exploded and the units will be killed.
+
+### DGBA_Airdrop_MaxWaitT
+Amount of seconds the script will wait before checking its state. By default this is 3 minutes. Set this higher if your heli has a lot of troops to load and you don't want to despawn it this soon.
+
+### DGBA_Airdrop_IdleRange
+The minimum 2d range distance the airdrop should have moved since it has spawned. If the heli did not move this distance, it will be removed after above max waiting time.
 
 ### DGBA_AIWeapons
 Array of weapons the AI can use. They will be random selection from this array per AI unit.

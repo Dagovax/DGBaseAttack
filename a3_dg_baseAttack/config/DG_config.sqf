@@ -20,7 +20,7 @@ DGBA_MinAmountPlayers	= 1; 	// Amount of players required to start the missions 
 DGBA_PlayerInBaseTMin	= 15 * 60; 	// Minimum time in seconds a player has to be in his base in order to start the raid
 DGBA_PlayerInBaseTMax	= 30 * 60; 	// Maximum time in seconds a player has to be in his base in order to start the raid
 DGBA_MaxRaidCount		= 1; 	// Maximum amount of raids a player can have per restart
-DGBA_ShowNotification	= 1;	// Broadcast notification to all players? [0 = off | 1 = exile | 2 = vemr_reloaded
+DGBA_ShowNotification	= 2;	// Broadcast notification to all players? [0 = off | 1 = exile | 2 = vemr_reloaded 
 DGBA_EnableAlarmSound	= true; // Setting this to false willl disable the alarm soundss
 DGBA_AlarmSounds		= 	[ 	// Sound names, length, pitch, array of objects that will play this sound
 								["air_raid", 10, 1, ["Land_Radar_Small_F", "Land_Radar_F", "Land_Airport_Tower_F", "Land_AirHorn_01_F", "Land_Cargo_Tower_V2_F"]],
@@ -45,7 +45,16 @@ DGBA_AISpawnVehicle		= true; // This will spawn a second group for normal +  lev
 DGBA_AINavalInvasion	= true; // If DGBA_AISpawnVehicle equals true and a base is near water, a boat will replace the vehicle.
 DGBA_AISpawnAirdrop		= true; // This will spawn a helicopter which will unload troops at the players base when level is hard +. 
 DGBA_CountAliveAI		= true;
+DGBA_AIUseNVG			= true; // If set to true, AI might spawn with NVG goggles. The random percentage is defined below.
+DGBA_AINVGSpawnChance	= 60;	// Percentage. So a valid value between <0> and <100>. 0 will mean that no unit will spawn with NVG. 100 means they all have NVG
 
+// AI Group Cleanup settings
+DGBA_Vehicle_MaxWaitT	= 60; // Amount of seconds the script will wait before checking the vehicle group state. Set this high enough if your vehicle group needs more time to load troops, and moving to the base.
+DGBA_Vehicle_IdleRange	= 25; // Distance in meters the spawned vehicle should at least have moved since it has spawned. If the distance is less than this number, the vehicle will be exploded and the units will be killed.
+DGBA_Airdrop_MaxWaitT	= 180; // Amount of seconds the script will wait before checking its state. By default this is 3 minutes. Set this higher if your heli has a lot of troops to load and you don't want to despawn it this soon.
+DGBA_Airdrop_IdleRange	= 100; // The minimum 2d range distance the airdrop should have moved since it has spawned. If the heli did not move this distance, it will be removed after above max waiting time.
+
+// Loadout settings
 DGBA_AIWeapons		=	[
 							"arifle_Katiba_F",
 							"arifle_Katiba_C_F",
@@ -78,17 +87,17 @@ DGBA_AIWeapons		=	[
 							"srifle_DMR_05_tan_F"
 						];
 DGBA_AILaunchers	=	[
+							"rhs_weap_igla",
+							"CUP_launch_Javelin",
+							"CUP_launch_NLAW",
 							"launch_RPG7_F",
 							"launch_B_Titan_tna_F",
 							"launch_B_Titan_F",
 							"launch_O_Titan_short_F",
 							"launch_B_Titan_short_F",
-							"launch_RPG32_F"
-							// "CUP_launch_APILAS",
-							// "CUP_launch_M47"
-							// "rhs_weap_igla",
-							// "CUP_launch_Javelin",
-							// "CUP_launch_NLAW"
+							"launch_RPG32_F",
+							"CUP_launch_APILAS",
+							"CUP_launch_M47"
 						];
 DGBA_AIWeaponOptics	=	[
 							"bipod_01_F_snd",
@@ -383,21 +392,21 @@ DGBA_AIVehicleGround = 	[
 							"B_LSV_01_armed_F",
 							"B_Quadbike_01_F",
 							"O_MRAP_02_hmg_F",
+							"CUP_O_UAZ_MG_CSAT",
+							"CUP_I_LR_SF_HMG_AAF",
 							"BTR40_MG_TK_INS_EP1",
 							"B_G_Offroad_01_armed_F",
 							"Exile_Car_Offroad_Armed_Guerilla02"
-							// "CUP_O_UAZ_MG_CSAT",
-							// "CUP_I_LR_SF_HMG_AAF"
 						];
 
 DGBA_AIVehicleSea = 	[
+							"CUP_B_RHIB_HIL",
+							"CUP_B_RHIB2Turret_HIL",
 							"B_Boat_Armed_01_minigun_F",
+							"CUP_O_LCVP_SLA",
+							"rhsusf_mkvsoc",
+							"CUP_C_Fishing_Boat_Chernarus",
 							"O_Boat_Armed_01_hmg_F"
-							// "CUP_B_RHIB_HIL",
-							// "CUP_B_RHIB2Turret_HIL",
-							// "CUP_O_LCVP_SLA",
-							// "rhsusf_mkvsoc",
-							// "CUP_C_Fishing_Boat_Chernarus"
 						];
 
 DGBA_AIVehicleAir = 	[ // Only for transport
@@ -405,19 +414,17 @@ DGBA_AIVehicleAir = 	[ // Only for transport
 							"Exile_Chopper_Orca_Black",
 							"B_Heli_Transport_03_unarmed_F",
 							"B_Heli_Transport_03_F",
-							"O_Heli_Transport_04_covered_F"
-							// "CUP_B_CH47F_GB",
-							// "CUP_B_MH47E_GB",
-							// "CUP_I_UH1H_slick_TK_GUE",
-							// "CUP_O_Mi8AMT_RU",
-							// "RHS_Mi8mt_Cargo_vdv",
-							// "CUP_I_412_Mil_Transport_AAF",
-							// "CUP_I_412_Mil_Transport_PMC",
-							// "CUP_B_412_Mil_Transport_HIL",
-							// "CUP_B_UH1Y_UNA_USMC",
-							// "RHS_CH_47F_10_cargo"
+							"O_Heli_Transport_04_covered_F",
+							"CUP_B_CH47F_GB",
+							"CUP_B_MH47E_GB",
+							"CUP_I_UH1H_slick_TK_GUE",
+							"CUP_O_Mi8AMT_RU",
+							"RHS_Mi8mt_Cargo_vdv",
+							"CUP_I_412_Mil_Transport_AAF",
+							"CUP_I_412_Mil_Transport_PMC",
+							"CUP_B_412_Mil_Transport_HIL",
+							"CUP_B_UH1Y_UNA_USMC",
+							"RHS_CH_47F_10_cargo"
 						];
-		
-	
+						
 ["Configuration loaded", DGBA_MessageName] call DGCore_fnc_log;
-DGBA_Configured = true;	

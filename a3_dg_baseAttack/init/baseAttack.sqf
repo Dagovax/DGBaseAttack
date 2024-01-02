@@ -1,9 +1,9 @@
 if (!isServer) exitWith {};
 
-if (isNil "DGBA_Configured") then
+if (isNil "DGBA_AIVehicleAir") then
 {
 	["%1 Waiting until configuration completes...", "DG Base Attacks"] call DGCore_fnc_log;
-	waitUntil{uiSleep 10; !(isNil "DGBA_Configured")}
+	waitUntil{uiSleep 10; !(isNil "DGBA_AIVehicleAir")}
 };
 
 ["Initializing Dagovax Games Base Raids", DGBA_MessageName] call DGCore_fnc_log;
@@ -209,9 +209,7 @@ while {true} do // Main Loop
 								if((_baseLevel >= (DGBA_BaseLevelRange select 2)) && DGBA_AISpawnAirdrop) then
 								{
 									_spawnAIVehicleAir = true;
-								};
-								
-								//diag_log format["%1 Groups to be spawned: 1 (ground):[%2], 2 (vehicle):[%3], 3 (troop airdrop):[%4]", DGBA_MessageName, _firstGroupCount, _secondGroupCount, _thirdGroupCount];
+								};	
 								
 								if(_firstGroupCount > 0) then
 								{
@@ -283,6 +281,16 @@ while {true} do // Main Loop
 										_unit setskill ["reloadSpeed",_skillLevel];
 										_unit setskill ["commanding",_skillLevel];
 										_unit setskill ["general",_skillLevel];
+										
+										if(DGBA_AIUseNVG) then
+										{
+											_shouldHaveNVG = [0, 100] call BIS_fnc_randomInt;
+											if(DGBA_AINVGSpawnChance >= _shouldHaveNVG) then
+											{
+												_unit additem "nvgoggles"; 
+												_unit assignitem "nvgoggles";
+											};
+										};
 									};
 									_firstGroup setCombatMode "RED";
 									_firstGroup setBehaviour "AWARE";
@@ -342,10 +350,12 @@ while {true} do // Main Loop
 										if(!isNil "_vehicleObj" && alive _vehicleObj) then
 										{
 											_oldPos = getPos _vehicleObj;
-											uiSleep 60;
+											uiSleep DGBA_Vehicle_MaxWaitT;
 											_newPos = getPos _vehicleObj;
-											if ((_newPos distance2D _oldPos) <= 25) then // If vehicle didn't move at all, destroy it.
+											_distance2d = (_newPos distance2D _oldPos);
+											if (_distance2d <= DGBA_Vehicle_IdleRange) then // If vehicle didn't move at all, destroy it.
 											{
+												[format["Exploded the '%1', because it was idle for too long (distance to spawnpoint = %2, which is less than required %3)", name _vehicleObj, _distance2d, DGBA_Vehicle_IdleRange], DGBA_MessageName, "debug"] call DGCore_fnc_log;
 												_vehicleObj setDamage 1;
 											};
 										};
@@ -429,6 +439,16 @@ while {true} do // Main Loop
 										_unit setskill ["reloadSpeed",_skillLevel];
 										_unit setskill ["commanding",_skillLevel];
 										_unit setskill ["general",_skillLevel];
+										
+										if(DGBA_AIUseNVG) then
+										{
+											_shouldHaveNVG = [0, 100] call BIS_fnc_randomInt;
+											if(DGBA_AINVGSpawnChance >= _shouldHaveNVG) then
+											{
+												_unit additem "nvgoggles"; 
+												_unit assignitem "nvgoggles";
+											};
+										};
 									};
 									_secondGroup setCombatMode "RED";
 									_secondGroup setBehaviour "COMBAT";
@@ -496,10 +516,12 @@ while {true} do // Main Loop
 										if(!isNil "_aircraftObject" && alive _aircraftObject) then
 										{
 											_oldPos = getPos _aircraftObject;
-											uiSleep 180; // Taking off etc might take some time
+											uiSleep DGBA_Airdrop_MaxWaitT; // Taking off etc might take some time
 											_newPos = getPos _aircraftObject;
-											if ((_newPos distance2D _oldPos) <= 100) then // If vehicle didn't move at all, destroy it.
+											_distance2d = (_newPos distance2D _oldPos);
+											if (_distance2d <= DGBA_Airdrop_IdleRange) then // If vehicle didn't move at all, destroy it.
 											{
+												[format["Deleted the '%1', because it was idle for too long (distance to spawnpoint = %2, which is less than required %3)", name _aircraftObject, _distance2d, DGBA_Airdrop_IdleRange], DGBA_MessageName, "debug"] call DGCore_fnc_log;
 												_aircraftObject allowDamage true;
 												deleteVehicleCrew _aircraftObject;
 												_aircraftObject setDamage 1;
@@ -511,11 +533,9 @@ while {true} do // Main Loop
 											};
 										};
 									};
-									//_aircraftObject setPosATL (_vehicleObj modelToWorld [0,0,75]);
+
 									_spawnAngle = [_thirdGroupPos,_pos] call BIS_fnc_dirTo;
 									_aircraftObject setDir _spawnAngle;
-									//_vehicleObj setVelocity [100 * (sin _spawnAngle), 100 * (cos _spawnAngle), 0];
-									//_aircraftObject flyInHeight 50;
 
 									_pilotGroup = createGroup east;
 									_pilotGroup setCombatMode "BLUE";
@@ -592,6 +612,7 @@ while {true} do // Main Loop
 										{ 
 											_unit addMagazineGlobal _ammo;
 										};
+										
 										_unit addWeaponGlobal _unitWeapon;
 										_unit addPrimaryWeaponItem selectRandom DGBA_AIWeaponOptics;
 										_unit setVariable ["ExileMoney",_money ,true]; // Add some money
@@ -610,6 +631,16 @@ while {true} do // Main Loop
 										_unit setskill ["reloadSpeed",_skillLevel];
 										_unit setskill ["commanding",_skillLevel];
 										_unit setskill ["general",_skillLevel];
+										
+										if(DGBA_AIUseNVG) then
+										{
+											_shouldHaveNVG = [0, 100] call BIS_fnc_randomInt;
+											if(DGBA_AINVGSpawnChance >= _shouldHaveNVG) then
+											{
+												_unit additem "nvgoggles"; 
+												_unit assignitem "nvgoggles";
+											};
+										};
 									};
 									//_thirdGroup addVehicle _aircraftObject;
 									_thirdGroup setCombatMode "BLUE";
@@ -619,34 +650,47 @@ while {true} do // Main Loop
 									_commanderFree = _aircraftObject emptyPositions "Commander";
 									_gunnerFree = _aircraftObject emptyPositions "Gunner";
 									_turretFree = _aircraftObject emptyPositions "Turret";
+									_turretPaths = allTurrets _aircraftObject;
+									if((count _turretPaths) > _turretFree) then
+									{
+										[format["There are more Turret Paths (%1) than turret seats (%2)? This is weird. Anyway, resized the array.", count _turretPaths, _turretFree], DGBA_MessageName, "debug"] call DGCore_fnc_log;
+										_turretPaths resize _turretFree;
+									};
 									_cargoFree = _aircraftObject emptyPositions "Cargo";
 									
 									{ // Assign units to the aircraft and let them move in
-										if(_commanderFree > 0) then
+										_assigned = false;
+										if(_commanderFree > 0 && !_assigned) then
 										{
 											_commanderFree = _commanderFree -1;
 											_x assignAsCommander _aircraftObject;
 											[_x] orderGetIn true;
+											_assigned = true;
 										};
-										if (_gunnerFree > 0) then
+										if (_gunnerFree > 0 && !_assigned) then
 										{
 											_gunnerFree = _gunnerFree - 1;
 											_x assignAsGunner _aircraftObject;
 											[_x] orderGetIn true;
+											_assigned = true;
 										};
-										if (_turretFree > 0) then
-										{
+										if (_turretFree > 0 && !_assigned) then
+										{	
 											_turretFree = _turretFree -1;
-											_x assignAsTurret _aircraftObject;
+											_turretPath = _turretPaths select 0;
+											_turretPaths deleteAt 0;
+											_x assignAsTurret [_aircraftObject, _turretPath];
 											[_x] orderGetIn true;
+											_assigned = true;
 										};
-										if (_cargoFree > 0) then
+										if (_cargoFree > 0 && !_assigned) then
 										{
 											_cargoFree = _cargoFree -1;
 											_x assignAsCargo _aircraftObject;
 											[_x] orderGetIn true;
+											_assigned = true;
 										};
-										if(_commanderFree == 0 && _gunnerFree == 0 && _turretFree == 0 && _cargoFree == 0) then
+										if((_commanderFree == 0 && _gunnerFree == 0 && _turretFree == 0 && _cargoFree == 0) || !_assigned) then
 										{
 											_x setDamage 1; // Kill of unit because there are no more seats!
 										};
@@ -694,7 +738,7 @@ while {true} do // Main Loop
 										[format["Aircraft reached base '%1' and landed. Unloaded troops. Current waypoint: %2", _baseNm, currentWaypoint (_pilotGroup)], DGBA_MessageName, "debug"] call DGCore_fnc_log;
 										_thirdGroup setCombatMode "RED";
 										_thirdGroup setBehaviour "COMBAT";
-										 _wp = _thirdGroup addWaypoint [ _enemyWaypointPos, 25, 1 ];
+										 _wp = _thirdGroup addWaypoint [ _thirdGroupPos, 25, 1 ];
 										 _wp setWaypointBehaviour "COMBAT";
 										 _wp setWaypointCombatMode "RED";
 										 _wp setWaypointCompletionRadius 10;
