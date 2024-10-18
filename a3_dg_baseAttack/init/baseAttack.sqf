@@ -244,7 +244,7 @@ while {true} do // Main Loop
 														name _instigator, 
 														name _unit, 
 														getText(configFile >> "CfgWeapons" >> currentWeapon _instigator >> "displayName"), 
-														_unit distance _instigator
+														round(_unit distance _instigator)
 													];
 													[_msg] remoteExec["systemChat",-2];
 												};
@@ -402,7 +402,7 @@ while {true} do // Main Loop
 														name _instigator, 
 														name _unit, 
 														getText(configFile >> "CfgWeapons" >> currentWeapon _instigator >> "displayName"), 
-														_unit distance _instigator
+														round(_unit distance _instigator)
 													];
 													[_msg] remoteExec["systemChat",-2];
 												};
@@ -593,7 +593,7 @@ while {true} do // Main Loop
 														name _instigator, 
 														name _unit, 
 														getText(configFile >> "CfgWeapons" >> currentWeapon _instigator >> "displayName"), 
-														_unit distance _instigator
+														round(_unit distance _instigator)
 													];
 													[_msg] remoteExec["systemChat",-2];
 												};

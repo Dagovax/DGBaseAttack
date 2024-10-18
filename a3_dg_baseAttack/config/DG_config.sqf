@@ -17,8 +17,8 @@ DGBA_SleepTime			= 60;
 DGBA_MinAmountPlayers	= 1; 	// Amount of players required to start the missions spawning. Set to 0 to have no wait time for players
 
 // Base raid settings
-DGBA_PlayerInBaseTMin	= 15 * 60; 	// Minimum time in seconds a player has to be in his base in order to start the raid
-DGBA_PlayerInBaseTMax	= 30 * 60; 	// Maximum time in seconds a player has to be in his base in order to start the raid
+DGBA_PlayerInBaseTMin	= 3 * 60; 	// Minimum time in seconds a player has to be in his base in order to start the raid
+DGBA_PlayerInBaseTMax	= 20 * 60; 	// Maximum time in seconds a player has to be in his base in order to start the raid
 DGBA_MaxRaidCount		= 1; 	// Maximum amount of raids a player can have per restart
 DGBA_ShowNotification	= 2;	// Broadcast notification to all players? [0 = off | 1 = exile | 2 = vemr_reloaded 
 DGBA_EnableAlarmSound	= true; // Setting this to false willl disable the alarm soundss
